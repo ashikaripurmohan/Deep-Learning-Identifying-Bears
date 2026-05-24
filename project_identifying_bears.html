@@ -29,17 +29,12 @@
     font-weight: 600;
     color: #191918;
     letter-spacing: -0.02em;
-  }
-
-  .nav-link {
     text-decoration: none;
-    color: #6b6b69;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: color 0.2s;
   }
 
-  .nav-link:hover { color: #191918; }
+  .nav-logo:hover {
+    color: #b8956a;
+  }
 
   /* Hero */
   .hero {
@@ -110,9 +105,12 @@
   .timeline {
     display: flex;
     gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 8px;
   }
 
   .timeline-card {
+    min-width: 240px;
     flex: 1;
     background: #ffffff;
     border: 1px solid #e8e5e0;
@@ -202,8 +200,6 @@
     color: #191918;
     font-weight: 600;
     text-align: right;
-    max-width: 60%;
-    word-break: break-all;
   }
 
   .detail-value a {
@@ -465,8 +461,7 @@
 <body>
 
 <nav>
-  <div class="nav-logo">Project Overview</div>
-  <a class="nav-link" href="https://github.com/ashikaripurmohan/Deep-Learning-Identifying-Bears" target="_blank">GitHub Repo</a>
+  <a class="nav-logo" href="/">Identifying Bears</a>
 </nav>
 
 <div class="hero">
