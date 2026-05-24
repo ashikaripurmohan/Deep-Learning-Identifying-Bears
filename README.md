@@ -4,6 +4,8 @@ A bear image classifier built on **ResNet-18**, trained using the [fastai](https
 
 Upload any image and the model will classify it with a confidence percentage for each category.
 
+This file has a good overview of all the steps taken to build this project. It is a good visual readme file - project_identifying_bears.html
+
 ## How it works
 
 The trained model is exported as `bear_model.pkl`. When you upload an image, the server loads the model, runs the image through ResNet-18, and returns the prediction along with confidence scores — for example, 92.4% grizzly, 5.1% black, 2.5% teddy.
