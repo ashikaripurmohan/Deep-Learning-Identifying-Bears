@@ -98,6 +98,11 @@ async def home():
     html_path = Path(__file__).parent / "index.html"
     return HTMLResponse(html_path.read_text())
 
+@app.get("/project_identifying_bears.html")
+async def steps():
+    html_path = Path(__file__).parent / "project_identifying_bears.html"
+    return HTMLResponse(html_path.read_text())
+
 @app.post("/classify")
 async def classify(file: UploadFile = File(...)):
     image_bytes = await file.read()

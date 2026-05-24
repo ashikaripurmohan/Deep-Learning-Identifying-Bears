@@ -73,8 +73,8 @@
 
   /* Section */
   .section {
-    padding: 48px 48px;
-    max-width: 1200px;
+    padding: 48px 32px;
+    max-width: 1400px;
     margin: 0 auto;
   }
 
@@ -104,18 +104,15 @@
   /* Timeline */
   .timeline {
     display: flex;
-    gap: 20px;
-    overflow-x: auto;
-    padding-bottom: 8px;
+    gap: 12px;
   }
 
   .timeline-card {
-    min-width: 240px;
     flex: 1;
     background: #ffffff;
     border: 1px solid #e8e5e0;
-    border-radius: 14px;
-    padding: 28px 24px;
+    border-radius: 12px;
+    padding: 18px 16px;
     display: flex;
     flex-direction: column;
     transition: transform 0.15s ease;
@@ -130,25 +127,25 @@
   .step-badge {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 16px;
+    gap: 6px;
+    margin-bottom: 10px;
   }
 
   .step-num {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.78rem;
+    font-size: 0.68rem;
     font-weight: 700;
     color: #fff;
     flex-shrink: 0;
   }
 
   .step-where {
-    font-size: 0.72rem;
+    font-size: 0.65rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -156,47 +153,47 @@
   }
 
   .timeline-card h3 {
-    font-size: 1.05rem;
+    font-size: 0.85rem;
     font-weight: 700;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
     letter-spacing: -0.01em;
   }
 
   .timeline-card p {
-    font-size: 0.88rem;
+    font-size: 0.75rem;
     color: #6b6b69;
-    line-height: 1.65;
+    line-height: 1.55;
     flex: 1;
   }
 
   .card-detail {
-    margin-top: 16px;
+    margin-top: 10px;
     background: #faf9f7;
-    border-radius: 8px;
-    padding: 12px 14px;
+    border-radius: 6px;
+    padding: 8px 10px;
   }
 
   .card-detail-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 4px 0;
+    padding: 2px 0;
   }
 
   .card-detail-row:not(:last-child) {
     border-bottom: 1px solid #e8e5e0;
-    padding-bottom: 8px;
-    margin-bottom: 8px;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
   }
 
   .detail-label {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     color: #a3a29e;
     font-weight: 500;
   }
 
   .detail-value {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     color: #191918;
     font-weight: 600;
     text-align: right;
@@ -212,19 +209,20 @@
   }
 
   .tech-tags {
-    margin-top: 14px;
+    margin-top: 10px;
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 4px;
   }
 
   .tech-tag {
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     font-weight: 500;
-    padding: 3px 10px;
+    padding: 2px 8px;
     border-radius: 100px;
     background: #f0eee9;
     color: #6b6b69;
+    white-space: nowrap;
   }
 
   .tech-tag.accent {
@@ -236,10 +234,10 @@
   .timeline-card:not(:last-child)::after {
     content: '→';
     position: absolute;
-    right: -16px;
+    right: -10px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 1.2rem;
+    font-size: 0.9rem;
     color: #c9c6c0;
     z-index: 1;
   }
@@ -748,7 +746,7 @@
   <div class="callout">
     <div class="callout-icon">🚀</div>
     <div class="callout-text">
-      <strong>To run:</strong> Open a terminal, run <code>cd ~/Claude/bear_app && python3 server.py</code>, then visit <code>http://localhost:4000</code> in your browser. The model loads in a few seconds and you're ready to classify.
+      <strong>To run:</strong> Open a terminal, run <code>cd ~/Claude/Deep-Learning-Identifying-Bears && python3 server.py</code>, then visit <code>http://localhost:4000</code> in your browser. The model loads in a few seconds and you're ready to classify.
     </div>
   </div>
 </div>
