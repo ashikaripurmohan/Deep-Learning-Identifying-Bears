@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Identifying Bears</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #faf9f7;
+    color: #191918;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Navigation */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 48px;
+    border-bottom: 1px solid #e8e5e0;
+    background: #faf9f7;
+    flex-shrink: 0;
+  }
+
+  .nav-logo {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #191918;
+    letter-spacing: -0.02em;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: #6b6b69;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover {
+    color: #191918;
+  }
+
+  /* Main layout: sidebar + content */
+  .app-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 280px;
+    border-right: 1px solid #e8e5e0;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+
+  .sidebar-header {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid #e8e5e0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sidebar-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #a3a29e;
+  }
+
+  .new-btn {
+    padding: 6px 14px;
+    background: #191918;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+  }
+
+  .new-btn:hover {
+    background: #2d2d2b;
+  }
+
+  .history-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+
+  .history-empty {
+    padding: 32px 20px;
+    text-align: center;
+    color: #c9c6c0;
+    font-size: 0.82rem;
+    line-height: 1.6;
+  }
+
+  .history-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-left: 3px solid transparent;
+  }
+
+  .history-item:hover {
+    background: #faf9f7;
+  }
+
+  .history-item.active {
+    background: #f6f5f1;
+    border-left-color: #b8956a;
+  }
+
+  .history-thumb {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid #e8e5e0;
+    flex-shrink: 0;
+  }
+
+  .history-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .history-prediction {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #191918;
+    text-transform: capitalize;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .history-file {
+    font-size: 0.72rem;
+    color: #a3a29e;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .history-confidence {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #b8956a;
+    flex-shrink: 0;
+  }
+
+  /* ── Main content ── */
+  .main-content {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 60px 48px 32px;
+    max-width: 720px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: #f0eee9;
+    color: #6b6b69;
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+    letter-spacing: 0.02em;
+  }
+
+  .hero h1 {
+    font-size: 3.2rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    color: #191918;
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+    color: #6b6b69;
+    line-height: 1.6;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  /* Upload Card */
+  .upload-section {
+    max-width: 600px;
+    margin: 20px auto 60px;
+    padding: 0 24px;
+    width: 100%;
+  }
+
+  .upload-card {
+    background: #ffffff;
+    border: 1px solid #e8e5e0;
+    border-radius: 16px;
+    padding: 48px;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+
+  .upload-card:hover {
+    border-color: #c9c6c0;
+  }
+
+  .drop-zone {
+    border: 2px dashed #d9d6d0;
+    border-radius: 12px;
+    padding: 48px 32px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #faf9f7;
+  }
+
+  .drop-zone:hover {
+    border-color: #b8956a;
+    background: #fdf9f4;
+  }
+
+  .drop-zone.dragover {
+    border-color: #b8956a;
+    background: #fdf9f4;
+  }
+
+  .drop-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 16px;
+    background: #f0eee9;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .drop-icon svg {
+    width: 24px;
+    height: 24px;
+    stroke: #6b6b69;
+  }
+
+  .drop-zone p {
+    font-size: 0.95rem;
+    color: #6b6b69;
+    margin-bottom: 8px;
+  }
+
+  .drop-zone .browse {
+    color: #b8956a;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .drop-zone .browse:hover {
+    text-decoration: underline;
+  }
+
+  .drop-zone .hint {
+    font-size: 0.8rem;
+    color: #a3a29e;
+    margin-top: 8px;
+  }
+
+  .classify-btn {
+    margin-top: 24px;
+    padding: 12px 32px;
+    background: #191918;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: inherit;
+  }
+
+  .classify-btn:hover {
+    background: #2d2d2b;
+  }
+
+  .classify-btn:disabled {
+    background: #c9c6c0;
+    cursor: not-allowed;
+  }
+
+  /* Preview */
+  .preview-container {
+    margin-top: 24px;
+    display: none;
+  }
+
+  .preview-container.active {
+    display: block;
+  }
+
+  .preview-img {
+    max-width: 100%;
+    max-height: 280px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 1px solid #e8e5e0;
+  }
+
+  .preview-name {
+    font-size: 0.82rem;
+    color: #a3a29e;
+    margin-top: 8px;
+  }
+
+  /* Result */
+  .result-card {
+    margin-top: 24px;
+    padding: 24px;
+    background: #f6f5f1;
+    border-radius: 12px;
+    display: none;
+  }
+
+  .result-card.active {
+    display: block;
+  }
+
+  .result-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #a3a29e;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+
+  .result-prediction {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #191918;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+    text-transform: capitalize;
+  }
+
+  .result-confidence {
+    font-size: 0.95rem;
+    color: #6b6b69;
+  }
+
+  .confidence-bar {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .bar-label {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #6b6b69;
+    min-width: 64px;
+    text-transform: capitalize;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 8px;
+    background: #e8e5e0;
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 100px;
+    background: #191918;
+    transition: width 0.6s ease;
+  }
+
+  .bar-value {
+    font-size: 0.82rem;
+    color: #a3a29e;
+    min-width: 44px;
+    text-align: right;
+  }
+
+  /* Footer */
+  footer {
+    padding: 24px 48px;
+    border-top: 1px solid #e8e5e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  footer p {
+    font-size: 0.8rem;
+    color: #a3a29e;
+  }
+
+  footer .disclaimer {
+    font-size: 0.75rem;
+    color: #c9c6c0;
+    max-width: 400px;
+    text-align: right;
+    line-height: 1.5;
+  }
+
+  #file-input {
+    display: none;
+  }
+
+  /* Model info overlay */
+  .overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(25, 25, 24, 0.4);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .overlay.active {
+    display: flex;
+  }
+
+  .modal {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 36px 40px;
+    max-width: 440px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+  }
+
+  .modal h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+  }
+
+  .modal p {
+    font-size: 0.92rem;
+    color: #6b6b69;
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+
+  .modal-close {
+    padding: 8px 20px;
+    background: #191918;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .modal-close:hover {
+    background: #2d2d2b;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Identifying Bears</div>
+  <ul class="nav-links">
+    <li><a href="#" id="model-link">Model</a></li>
+    <li><a href="https://github.com/ashikaripurmohan" target="_blank">GitHub</a></li>
+  </ul>
+</nav>
+
+<div class="app-layout">
+
+  <!-- Sidebar: history of classifications -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">History</span>
+      <button class="new-btn" id="new-btn">+ New</button>
+    </div>
+    <div class="history-list" id="history-list">
+      <div class="history-empty" id="history-empty">
+        No classifications yet.<br>Upload an image to get started.
+      </div>
+    </div>
+  </div>
+
+  <!-- Main content area -->
+  <div class="main-content" id="main-content">
+    <div class="hero">
+      <span class="hero-badge">Image Classification</span>
+      <h1>Identifying Bears</h1>
+      <p>Upload an image of a bear and the model will classify it as a grizzly, black bear, or teddy bear.</p>
+    </div>
+
+    <div class="upload-section">
+      <div class="upload-card" id="upload-card">
+        <div class="drop-zone" id="drop-zone">
+          <div class="drop-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+            </svg>
+          </div>
+          <p>Drag and drop your image here, or <span class="browse" id="browse-btn">browse</span></p>
+          <p class="hint">Supports JPG, PNG — max 10MB</p>
+        </div>
+
+        <input type="file" id="file-input" accept="image/*">
+
+        <div class="preview-container" id="preview-container">
+          <img class="preview-img" id="preview-img" alt="Preview">
+          <p class="preview-name" id="preview-name"></p>
+        </div>
+
+        <button class="classify-btn" id="classify-btn" disabled>Classify</button>
+
+        <div class="result-card" id="result-card">
+          <div class="result-label">Prediction</div>
+          <div class="result-prediction" id="result-prediction"></div>
+          <div class="result-confidence" id="result-confidence"></div>
+          <div class="confidence-bar" id="confidence-bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p></p>
+      <p class="disclaimer">For educational purposes only. This model was trained on a limited dataset and should not be used for wildlife identification.</p>
+    </footer>
+  </div>
+
+</div>
+
+<div class="overlay" id="model-overlay">
+  <div class="modal">
+    <h2>About this model</h2>
+    <p>A personal project by Avinash Mohan. The image classifier is built on ResNet-18, fine-tuned to identify grizzly bears, black bears, and teddy bears using the fastai library.</p>
+    <button class="modal-close" id="modal-close">Close</button>
+  </div>
+</div>
+
+<script>
+  // ── Model info modal ────────────────────────────────
+  document.getElementById('model-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('model-overlay').classList.add('active');
+  });
+  document.getElementById('modal-close').addEventListener('click', () => {
+    document.getElementById('model-overlay').classList.remove('active');
+  });
+  document.getElementById('model-overlay').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) {
+      e.currentTarget.classList.remove('active');
+    }
+  });
+
+  // ── Elements ────────────────────────────────────────
+  const dropZone = document.getElementById('drop-zone');
+  const fileInput = document.getElementById('file-input');
+  const browseBtn = document.getElementById('browse-btn');
+  const previewContainer = document.getElementById('preview-container');
+  const previewImg = document.getElementById('preview-img');
+  const previewName = document.getElementById('preview-name');
+  const classifyBtn = document.getElementById('classify-btn');
+  const resultCard = document.getElementById('result-card');
+  const historyList = document.getElementById('history-list');
+  const historyEmpty = document.getElementById('history-empty');
+  const mainContent = document.getElementById('main-content');
+
+  let selectedFile = null;
+  let selectedFileDataUrl = null;
+
+  // History: array of { fileName, prediction, confidence, probabilities, thumbUrl }
+  const history = [];
+
+  // ── New button: reset to upload state ───────────────
+  document.getElementById('new-btn').addEventListener('click', () => {
+    resetToUpload();
+  });
+
+  function resetToUpload() {
+    selectedFile = null;
+    selectedFileDataUrl = null;
+    fileInput.value = '';
+    dropZone.style.display = '';
+    previewContainer.classList.remove('active');
+    resultCard.classList.remove('active');
+    classifyBtn.textContent = 'Classify';
+    classifyBtn.disabled = true;
+
+    // Deselect any active history item
+    document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+  }
+
+  // ── File selection ──────────────────────────────────
+  browseBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fileInput.click();
+  });
+  dropZone.addEventListener('click', () => fileInput.click());
+
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+  });
+  dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('dragover');
+  });
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) handleFile(file);
+  });
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) handleFile(fileInput.files[0]);
+  });
+
+  function handleFile(file) {
+    selectedFile = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      selectedFileDataUrl = e.target.result;
+      previewImg.src = e.target.result;
+      previewName.textContent = file.name;
+      previewContainer.classList.add('active');
+      dropZone.style.display = 'none';
+      classifyBtn.disabled = false;
+      classifyBtn.textContent = 'Classify';
+      resultCard.classList.remove('active');
+
+      // Deselect history items when uploading a new file
+      document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── Classify ────────────────────────────────────────
+  classifyBtn.addEventListener('click', async () => {
+    if (!selectedFile) return;
+
+    // Save scroll position
+    const scrollTop = mainContent.scrollTop;
+
+    classifyBtn.disabled = true;
+    classifyBtn.textContent = 'Classifying...';
+    resultCard.classList.remove('active');
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    try {
+      const response = await fetch('/classify', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+
+      // Display results
+      showResults(data);
+
+      // Add to history
+      addToHistory({
+        fileName: selectedFile.name,
+        prediction: data.prediction,
+        confidence: data.confidence,
+        probabilities: data.probabilities,
+        thumbUrl: selectedFileDataUrl,
+      });
+
+      classifyBtn.textContent = 'Classify';
+      classifyBtn.disabled = true;
+
+      // Restore scroll position so it doesn't jump
+      mainContent.scrollTop = scrollTop;
+
+    } catch (err) {
+      classifyBtn.textContent = 'Error — is the server running?';
+      classifyBtn.disabled = false;
+      console.error('Classification failed:', err);
+    }
+  });
+
+  // ── Show results in the result card ─────────────────
+  function showResults(data) {
+    document.getElementById('result-prediction').textContent =
+      data.prediction + ' Bear';
+    document.getElementById('result-confidence').textContent =
+      (data.confidence * 100).toFixed(1) + '% confidence';
+
+    const barContainer = document.getElementById('confidence-bar');
+    barContainer.innerHTML = '';
+
+    const sorted = Object.entries(data.probabilities)
+      .sort((a, b) => b[1] - a[1]);
+
+    for (const [category, prob] of sorted) {
+      const pct = (prob * 100).toFixed(1);
+      const row = document.createElement('div');
+      row.className = 'bar-row';
+      row.innerHTML = `
+        <span class="bar-label">${category}</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width: 0%"></div>
+        </div>
+        <span class="bar-value">${pct}%</span>
+      `;
+      barContainer.appendChild(row);
+
+      // Animate the bar after a small delay
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          row.querySelector('.bar-fill').style.width = pct + '%';
+        });
+      });
+    }
+
+    resultCard.classList.add('active');
+  }
+
+  // ── History management ──────────────────────────────
+  function addToHistory(item) {
+    history.unshift(item); // newest first
+    renderHistory();
+    // Auto-select the newest item
+    const firstItem = historyList.querySelector('.history-item');
+    if (firstItem) firstItem.classList.add('active');
+  }
+
+  function renderHistory() {
+    // Remove empty state
+    historyEmpty.style.display = history.length === 0 ? '' : 'none';
+
+    // Remove old items (keep the empty placeholder)
+    historyList.querySelectorAll('.history-item').forEach(el => el.remove());
+
+    history.forEach((item, index) => {
+      const el = document.createElement('div');
+      el.className = 'history-item';
+      el.innerHTML = `
+        <img class="history-thumb" src="${item.thumbUrl}" alt="${item.prediction}">
+        <div class="history-info">
+          <div class="history-prediction">${item.prediction} Bear</div>
+          <div class="history-file">${item.fileName}</div>
+        </div>
+        <div class="history-confidence">${(item.confidence * 100).toFixed(1)}%</div>
+      `;
+
+      // Click to view a past result
+      el.addEventListener('click', () => {
+        // Highlight this item
+        document.querySelectorAll('.history-item').forEach(h => h.classList.remove('active'));
+        el.classList.add('active');
+
+        // Show the image and results
+        previewImg.src = item.thumbUrl;
+        previewName.textContent = item.fileName;
+        previewContainer.classList.add('active');
+        dropZone.style.display = 'none';
+        showResults(item);
+
+        classifyBtn.textContent = 'Classify';
+        classifyBtn.disabled = true;
+        selectedFile = null;
+      });
+
+      historyList.appendChild(el);
+    });
+  }
+</script>
+
+</body>
+</html>
